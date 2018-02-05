@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use Log::ger;
 
-use Module::Patch 0.12 qw();
+use Module::Patch 0.26 qw();
 use base qw(Module::Patch);
 
 our %config;
