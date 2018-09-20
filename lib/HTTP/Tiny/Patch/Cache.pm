@@ -28,7 +28,7 @@ my $p_request = sub {
         return $orig->(@_);
     }
 
-    my $tempdir = File::Util::Tempdir::get_tempdir();
+    my $tempdir = File::Util::Tempdir::get_user_tempdir();
     my $cachedir = "$tempdir/http_tiny_patch_cache";
     log_trace "Cache dir is %s", $cachedir;
     unless (-d $cachedir) {
@@ -103,7 +103,7 @@ To clear cache, you can temporarily set cache period to 0:
  % CACHE_MAX_AGE=0 perl -MHTTP::Tiny::Patch::Cache ...
 
 Or you can delete I<$tempdir/http_tiny_patch_cache/>, where I<$tempdir> is
-retrieved from L<File::Util::Tempdir>'s C<get_tempdir()>.
+retrieved from L<File::Util::Tempdir>'s C<get_user_tempdir()>.
 
 
 =head1 DESCRIPTION
