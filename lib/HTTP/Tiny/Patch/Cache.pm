@@ -42,7 +42,7 @@ my $p_request = sub {
     if (!(-f $cachepath) || (-M _) > $maxage/86400) {
         log_trace "Retrieving response from remote ...";
         my $res = $orig->(@_);
-        return $res unless $res->{success;
+        return $res unless $res->{status} =~ /\A[23]/; # HTTP::Tiny only regards 2xx as success
         log_trace "Saving response to cache ...";
         open my $fh, ">", $cachepath or die "Can't create cache file '$cachepath' for '$url': $!";
         print $fh JSON::MaybeXS::encode_json($res);
