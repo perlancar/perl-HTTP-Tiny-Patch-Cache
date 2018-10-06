@@ -36,10 +36,13 @@ my $p_request = sub {
     }
     my $cachepath = "$cachedir/".Digest::SHA::sha256_hex($url);
     log_trace "Cache file is %s", $cachepath;
-    my $maxage = $ENV{CACHE_MAX_AGE} // 86400;
+    my $maxage = $config{-max_age} //
+        $ENV{HTTP_TINY_CACHE_MAX_AGE} //
+        $ENV{CACHE_MAX_AGE} // 86400;
     if (!(-f $cachepath) || (-M _) > $maxage/86400) {
         log_trace "Retrieving response from remote ...";
         my $res = $orig->(@_);
+        return $res unless $res->{success;
         log_trace "Saving response to cache ...";
         open my $fh, ">", $cachepath or die "Can't create cache file '$cachepath' for '$url': $!";
         print $fh JSON::MaybeXS::encode_json($res);
@@ -59,10 +62,9 @@ sub patch_data {
     return {
         v => 3,
         config => {
-            #-max_age => {
-            #    schema  => 'posint*',
-            #    default => 86400,
-            #},
+            -max_age => {
+                schema  => 'posint*',
+            },
         },
         patches => [
             {
@@ -84,7 +86,9 @@ sub patch_data {
 
 From Perl:
 
- use HTTP::Tiny::Patch::Cache;
+ use HTTP::Tiny::Patch::Cache
+     # -max_age => 7200, # optional, sets max age, can also be set via environment variables
+ ;
 
  my $res  = HTTP::Tiny->new->get("http://www.example.com/");
  my $res2 = HTTP::Tiny->request(GET => "http://www.example.com/"); # cached response
@@ -117,6 +121,12 @@ saving bandwidth when repeatedly getting huge HTTP pages).
 
 =head1 CONFIGURATION
 
+=head2 -max_age
+
+Int. Sets maximum age for cache. If not set, will consult environment variables
+(see L</"ENVIRONMENT">). If all environment variables are not set, will use the
+default 86400.
+
 
 =head1 FAQ
 
@@ -125,7 +135,11 @@ saving bandwidth when repeatedly getting huge HTTP pages).
 
 =head2 CACHE_MAX_AGE
 
-Int. Default 86400. Set period of cache.
+Int. Will be consulted after L</"HTTP_TINY_PATCH_CACHE_MAX_AGE">.
+
+=head2 HTTP_TINY_PATCH_CACHE_MAX_AGE
+
+Int. Will be consulted before L</"CACHE_MAX_AGE">.
 
 
 =head1 SEE ALSO
