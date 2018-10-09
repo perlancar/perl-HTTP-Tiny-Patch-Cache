@@ -112,11 +112,13 @@ retrieved from L<File::Util::Tempdir>'s C<get_user_tempdir()>.
 
 =head1 DESCRIPTION
 
-This module patches L<HTTP::Tiny> to cache responses. Currently only GET
-requests are cached. Cache are keyed by SHA256-hex(URL). Error responses are
-also cached. Currently no cache-related HTTP request or response headers (e.g.
-C<Cache-Control>) are respected. This patch is mostly useful when testing (e.g.
-saving bandwidth when repeatedly getting huge HTTP pages).
+This module patches L<HTTP::Tiny> to cache responses.
+
+Currently only GET requests are cached. Cache are keyed by SHA256-hex(URL).
+Error responses are also cached. Currently no cache-related HTTP request or
+response headers (e.g. C<Cache-Control>) are respected. This patch is mostly
+useful when testing (e.g. saving bandwidth when repeatedly getting huge HTTP
+pages).
 
 
 =head1 CONFIGURATION
@@ -143,6 +145,8 @@ Int. Will be consulted before L</"CACHE_MAX_AGE">.
 
 
 =head1 SEE ALSO
+
+L<HTTP::Tiny::Cache>, subclass version of this module.
 
 L<LWP::Simple::WithCache>
 
