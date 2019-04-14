@@ -16,7 +16,7 @@ our %config;
 my $p_request = sub {
     require Digest::SHA;
     require File::Util::Tempdir;
-    require JSON::MaybeXS;
+    require Storable;
 
     my $ctx = shift;
     my $orig = $ctx->{orig};
@@ -45,14 +45,14 @@ my $p_request = sub {
         return $res unless $res->{status} =~ /\A[23]/; # HTTP::Tiny only regards 2xx as success
         log_trace "Saving response to cache ...";
         open my $fh, ">", $cachepath or die "Can't create cache file '$cachepath' for '$url': $!";
-        print $fh JSON::MaybeXS::encode_json($res);
+        Storable::store_fd($res, $fh);
         close $fh;
         return $res;
     } else {
         log_trace "Retrieving response from cache ...";
         open my $fh, "<", $cachepath or die "Can't read cache file '$cachepath' for '$url': $!";
         local $/;
-        my $res = JSON::MaybeXS::decode_json(scalar <$fh>);
+        my $res = Storable::fd_retrieve($fh);
         close $fh;
         return $res;
     }
